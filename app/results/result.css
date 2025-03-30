@@ -1,0 +1,16 @@
+/* result.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+/* Global font styles */
+body, .custom-font {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  font-family: 'Montserrat', sans-serif;
+}

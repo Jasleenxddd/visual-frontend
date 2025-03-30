@@ -1,0 +1,92 @@
+.history-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    font-family: 'Montserrat', Arial, sans-serif; /* Added Montserrat font */
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+  
+  .history-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-family: 'Montserrat', Arial, sans-serif; /* Added Montserrat font */
+  }
+  
+  .history-step {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .history-step h2 {
+    margin-bottom: 20px; /* Add space between step titles */
+    font-family: 'Montserrat', Arial, sans-serif; /* Added Montserrat font */
+  }
+  
+  .small-grid-box {
+    background: white;
+    border: 1px solid #cf5e5e;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px;
+    width: 350px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 90px; /* Uniform box size */
+  }
+  
+  .small-grid-box.selected {
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    transform: scale(1.05);
+  }
+  .small-box-image-container {
+    margin-right: 15px;
+  }
+  
+  .small-box-image {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .small-box-text-container {
+    flex-grow: 1;
+  }
+  
+  .small-box-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    font-family: 'Montserrat', Arial, sans-serif; /* Added Montserrat font */
+  }
+  
+  .small-box-text {
+    font-size: 14px;
+    color: #666;
+    font-family: 'Montserrat', Arial, sans-serif; /* Added Montserrat font */
+  }
+  
+  .step2-readonly,
+  .step3-readonly {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .step2-title,
+  .step3-title {
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'Montserrat', Arial, sans-serif; /* Added Montserrat font */
+  }
+  
+  .step2-content,
+  .step3-content {
+    font-size: 16px;
+    color: #666;
+    font-family: 'Montserrat', Arial, sans-serif; /* Added Montserrat font */
+  }
+  

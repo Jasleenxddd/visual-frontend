@@ -1,0 +1,8 @@
+{
+    "build": {
+      "env": {
+        "NEXT_SHARP_PATH": "./node_modules/sharp"
+      }
+    }
+  }
+  
