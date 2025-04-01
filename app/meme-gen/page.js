@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import TopNav from "../../components/Dashboard/VerticalStepper/TopNav";
-import mood from "../../images/mm.png";
-import dice from "../../images/d.png";
+import axios from "axios";
+import TopNav from "../components/Dashboard/VerticalStepper/TopNav";
+import mood from "../images/mm.png";
+import dice from "../images/d.png";
 
 const moodOptions = [
   { emoji: "😊", label: "Happy" },
@@ -23,24 +24,73 @@ export default function MemeGenerator() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [activeTab, setActiveTab] = useState(null);
   const [showMoodPopup, setShowMoodPopup] = useState(false);
+  const [generatedMemes, setGeneratedMemes] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleGenerateMeme = () => {
-    if (memeText.trim() !== "") {
-      router.push(`/meme?text=${encodeURIComponent(memeText)}`);
+  const handleGenerateMeme = async () => {
+    if (!memeText.trim()) {
+      setError("Meme text cannot be empty");
+      return;
+    }
+  
+    if (!selectedMood) {
+      setError("Mood is required");
+      return;
+    }
+  
+    setLoading(true);
+    setError("");
+  
+    try {
+      const userId = localStorage.getItem("userId");
+  
+      if (!userId) {
+        setError("User not logged in");
+        setLoading(false);
+        return;
+      }
+  
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:80';
+
+const response = await axios.post(`${backendUrl}/api/meme/generate-meme`, {
+  userInput: memeText,
+  userId: userId,
+  mood: selectedMood ? selectedMood.label : "Neutral",
+});
+
+
+
+  
+      const { memes, detected_emotion } = response.data;
+  
+      if (!memes || memes.length === 0) {
+        throw new Error("No memes generated");
+      }
+  
+      setGeneratedMemes(memes);
+      console.log("Detected Emotion:", detected_emotion);
+    } catch (err) {
+      console.error("Error generating meme:", err);
+      setError(err.response?.data?.error || "Failed to generate meme");
+    } finally {
+      setLoading(false);
     }
   };
+  
+  
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-white to-blue-50 p-6">
       <TopNav />
 
       <h1 className="text-2xl font-bold text-center mt-16">
-        Turn Your Thoughts into Hilarious Memes! with<br />
-        <span className="text-blue-600"> Visual Craft</span>
+        Turn Your Thoughts into Hilarious Memes! with
+        <br />
+        <span className="text-blue-600">Visual Craft</span>
       </h1>
 
-      {/* Mood Selector and Random Meme buttons */}
       <div className="grid grid-cols-2 gap-16 mt-8 relative">
         {/* Mood Selector */}
         <div
@@ -60,13 +110,12 @@ export default function MemeGenerator() {
             </span>
           </button>
 
-          {/* Mood Options Popup */}
           {showMoodPopup && (
-            <div className="absolute top-24 bg-white shadow-2xl rounded-2xl p-6 grid grid-cols-4 gap-6 w-64 transition-all duration-300">
+            <div className="absolute top-24 bg-white shadow-2xl rounded-2xl p-6 grid grid-cols-4 gap-6 w-64">
               {moodOptions.map((mood, index) => (
                 <button
                   key={index}
-                  className="flex flex-col items-center p-3 rounded-lg hover:bg-blue-100 transition"
+                  className="flex flex-col items-center p-3 rounded-lg hover:bg-blue-100"
                   onClick={() => {
                     setSelectedMood(mood);
                     setMemeText("");
@@ -98,30 +147,37 @@ export default function MemeGenerator() {
 
       {/* Meme Input Section */}
       <div className="bg-white mt-6 p-4 rounded-xl shadow-md w-full max-w-4xl flex flex-col">
-        <div className="flex items-center">
-          <textarea
-            placeholder={
-              selectedMood
-                ? `Enter ${selectedMood.label} text`
-                : activeTab === "random"
-                ? "Enter random meme text"
-                : "Enter Meme Text"
-            }
-            className="w-full focus:outline-none text-gray-700 placeholder-gray-400 resize-none h-32 p-2 rounded-lg"
-            value={memeText}
-            onChange={(e) => setMemeText(e.target.value)}
-          />
-        </div>
+        <textarea
+          placeholder={
+            selectedMood
+              ? `Enter ${selectedMood.label} text`
+              : activeTab === "random"
+              ? "Enter random meme text"
+              : "Enter Meme Text"
+          }
+          className="w-full focus:outline-none text-gray-700 placeholder-gray-400 resize-none h-32 p-2 rounded-lg"
+          value={memeText}
+          onChange={(e) => setMemeText(e.target.value)}
+        />
 
-        {/* Generate Meme Button */}
         <div className="flex justify-end mt-4">
           <button
             onClick={handleGenerateMeme}
-            className="flex items-center space-x-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white py-2 px-4 rounded-lg w-fit hover:opacity-90"
+            disabled={loading}
+            className="bg-gradient-to-r from-blue-400 to-purple-500 text-white py-2 px-4 rounded-lg hover:opacity-90"
           >
-            <span>✨ Create Meme</span>
+            {loading ? "Generating..." : "✨ Create Meme"}
           </button>
         </div>
+      </div>
+
+      {error && <p className="text-red-500 mt-4">{error}</p>}
+
+      {/* Meme Display */}
+      <div className="mt-6 grid grid-cols-2 gap-6">
+        {generatedMemes.map((meme, index) => (
+          <img key={index} src={meme.url} alt="Generated Meme" className="rounded-lg shadow-lg" />
+        ))}
       </div>
     </div>
   );

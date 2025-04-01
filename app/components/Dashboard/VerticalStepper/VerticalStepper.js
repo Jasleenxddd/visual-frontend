@@ -10,7 +10,7 @@ import ReelsIcon from "../../../images/reels.png";
 
 const featureLinks = {
   infograph: "/feature/infographics",
-  meme: "/feature/meme-gen",
+  meme: "/meme-gen",
   charts: "/feature/flow-chart",
   reels: "/feature/reels",
 };

@@ -8,14 +8,13 @@ import { FaHeart, FaDownload, FaEdit } from "react-icons/fa";
 export default function MemePage() {
   const searchParams = useSearchParams();
   const memeText = searchParams.get("text");
+  const images = JSON.parse(searchParams.get("images") || "[]");
   const router = useRouter();
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-white to-blue-50 p-6">
-      {/* Navbar */}
       <Navbar />
 
-      {/* Back Button (Left Corner) */}
       <div className="w-full max-w-6xl">
         <button
           onClick={() => router.back()}
@@ -25,25 +24,19 @@ export default function MemePage() {
         </button>
       </div>
 
-      {/* Meme Grid with Navigation on Click */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-10 mt-6">
-        {[...Array(6)].map((_, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-6">
+        {images.map((url, index) => (
           <div
             key={index}
             className="bg-white shadow-md rounded-xl p-4 flex flex-col items-center transition hover:shadow-lg group relative cursor-pointer"
-            onClick={() => router.push(`/infograph?text=${encodeURIComponent(memeText || "")}`)}
           >
-            {/* Meme Image */}
             <img
-              src="https://i.imgflip.com/1bij.jpg"
-              alt="Meme"
-              className="w-48 h-auto rounded-md"
+              src={url}
+              alt="Generated Meme"
+              className="w-full h-auto rounded-md"
             />
-
-            {/* Meme Text */}
             <p className="mt-3 text-gray-700 text-sm text-center font-bold">{memeText}</p>
 
-            {/* Icons Section (Appears on Hover) */}
             <div className="absolute bottom-2 left-2 right-2 flex justify-between bg-white bg-opacity-90 p-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <FaHeart className="text-gray-500 cursor-pointer hover:text-red-500" />
               <FaDownload className="text-gray-500 cursor-pointer hover:text-green-400" />
