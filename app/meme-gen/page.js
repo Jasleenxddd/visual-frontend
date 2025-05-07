@@ -31,55 +31,42 @@ export default function MemeGenerator() {
 
   const handleGenerateMeme = async () => {
     if (!memeText.trim()) {
-      setError("Meme text cannot be empty");
-      return;
+        setError("Meme text cannot be empty");
+        return;
     }
-  
-    if (!selectedMood) {
-      setError("Mood is required");
-      return;
+
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+        setError("User not logged in");
+        return;
     }
-  
+
     setLoading(true);
     setError("");
-  
+
     try {
-      const userId = localStorage.getItem("userId");
-  
-      if (!userId) {
-        setError("User not logged in");
-        setLoading(false);
-        return;
-      }
-  
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:80';
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:80';
 
-const response = await axios.post(`${backendUrl}/api/meme/generate-meme`, {
-  userInput: memeText,
-  userId: userId,
-  mood: selectedMood ? selectedMood.label : "Neutral",
-});
+        // ✅ Corrected API Call
+        const response = await axios.post(`${backendUrl}/api/meme/generate-meme`, {
+            userInput: memeText,
+            userId: userId,
+        });
 
+        const { memes, detected_emotion, message, success } = response.data;
 
+        if (!success) throw new Error(message || "Failed to generate meme");
+        if (!memes || memes.length === 0) throw new Error("No memes generated");
 
-  
-      const { memes, detected_emotion } = response.data;
-  
-      if (!memes || memes.length === 0) {
-        throw new Error("No memes generated");
-      }
-  
-      setGeneratedMemes(memes);
-      console.log("Detected Emotion:", detected_emotion);
+        setGeneratedMemes(memes);
     } catch (err) {
-      console.error("Error generating meme:", err);
-      setError(err.response?.data?.error || "Failed to generate meme");
+        console.error("Error generating meme:", err);
+        setError(err.response?.data?.error || "Failed to generate meme");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
-  
-  
+};
+
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-white to-blue-50 p-6">
@@ -148,13 +135,7 @@ const response = await axios.post(`${backendUrl}/api/meme/generate-meme`, {
       {/* Meme Input Section */}
       <div className="bg-white mt-6 p-4 rounded-xl shadow-md w-full max-w-4xl flex flex-col">
         <textarea
-          placeholder={
-            selectedMood
-              ? `Enter ${selectedMood.label} text`
-              : activeTab === "random"
-              ? "Enter random meme text"
-              : "Enter Meme Text"
-          }
+          placeholder="Enter Meme Text"
           className="w-full focus:outline-none text-gray-700 placeholder-gray-400 resize-none h-32 p-2 rounded-lg"
           value={memeText}
           onChange={(e) => setMemeText(e.target.value)}
